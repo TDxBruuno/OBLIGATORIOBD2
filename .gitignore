@@ -1,0 +1,11 @@
+# Credenciales locales
+run.local.ps1
+run.local.sh
+
+# Maven
+target/
+
+# IDE
+.idea/
+*.iml
+.vscode/

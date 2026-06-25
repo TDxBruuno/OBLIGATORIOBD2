@@ -62,6 +62,11 @@ public class TicketingController {
         return Map.of("telefonos", service.listarTelefonosUsuario(idUsuario));
     }
 
+    @GetMapping("/usuarios")
+    public Map<String, Object> buscarUsuarioPorMail(@RequestParam String mail) {
+        return service.buscarUsuarioPorMail(mail);
+    }
+
     @GetMapping("/usuarios/{idUsuario}/compras")
     public List<Map<String, Object>> comprasDeUsuario(@PathVariable long idUsuario) {
         return service.listarComprasDeUsuario(idUsuario);

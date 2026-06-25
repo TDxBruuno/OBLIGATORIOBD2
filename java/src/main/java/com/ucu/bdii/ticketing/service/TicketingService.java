@@ -117,6 +117,17 @@ public class TicketingService {
                 String.class, idUsuario);
     }
 
+    public Map<String, Object> buscarUsuarioPorMail(String mail) {
+        return jdbc.queryForList(
+                        "SELECT id_usuario, mail, tipo_usuario " +
+                                "FROM usuarios " +
+                                "WHERE mail = ?",
+                        mail
+                ).stream()
+                .findFirst()
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("No existe un usuario con ese mail"));
+    }
     // =========================================================================
     // INFRAESTRUCTURA: ESTADIO, EQUIPO, SECTOR
     // =========================================================================

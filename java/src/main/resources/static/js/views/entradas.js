@@ -34,10 +34,6 @@ function mostrarEntradas(entradas) {
 
             if (entrada.estado_entrada === "ACTIVA") {
                 html += `
-                    <button onclick="renovarTokenDesdeEntrada(${entrada.id_entrada})">
-                        Renovar token
-                    </button>
-
                     <button onclick="iniciarTransferencia(${entrada.id_entrada})">
                         Transferir
                     </button>
@@ -61,8 +57,13 @@ function mostrarEntradas(entradas) {
 
     document.getElementById("app").innerHTML = html;
 
-    document
-        .getElementById("btnVolverInicio")
-        .addEventListener("click", () => mostrarInicio(obtenerUsuarioActual()));
+    const btnVolverInicio = document.getElementById("btnVolverInicio");
+
+    if (btnVolverInicio) {
+        btnVolverInicio.addEventListener("click", () => {
+            detenerRenovacionAutomaticaTokens();
+            mostrarInicio(obtenerUsuarioActual());
+        });
+    }
 
 }

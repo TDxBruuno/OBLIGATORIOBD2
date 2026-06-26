@@ -1,12 +1,18 @@
+let intervaloTokensEntradas = null;
+
 async function cargarMisEntradas() {
 
     try {
+
+        detenerRenovacionAutomaticaTokens();
 
         const usuario = obtenerUsuarioActual();
 
         const entradas = await listarEntradasDeUsuario(usuario.id_usuario);
 
         mostrarEntradas(entradas);
+
+        iniciarRenovacionAutomaticaTokens(entradas);
 
     } catch (error) {
 
@@ -18,22 +24,51 @@ async function cargarMisEntradas() {
 
 }
 
-async function renovarTokenDesdeEntrada(idEntrada) {
+function iniciarRenovacionAutomaticaTokens(entradas) {
 
-    try {
+    detenerRenovacionAutomaticaTokens();
 
-        await renovarTokenEntrada(idEntrada);
+    const entradasActivas = entradas.filter(entrada => entrada.estado_entrada === "ACTIVA");
 
-        alert("Token renovado correctamente.");
+    if (entradasActivas.length === 0) {
+        return;
+    }
 
-        cargarMisEntradas();
+    intervaloTokensEntradas = setInterval(async () => {
 
-    } catch (error) {
+        try {
 
-        console.error(error);
+            for (const entrada of entradasActivas) {
+                await renovarTokenEntrada(entrada.id_entrada);
+            }
 
-        alert(error.message);
+            const usuario = obtenerUsuarioActual();
 
+            const entradasActualizadas = await listarEntradasDeUsuario(usuario.id_usuario);
+
+            mostrarEntradas(entradasActualizadas);
+
+            iniciarRenovacionAutomaticaTokens(entradasActualizadas);
+
+        } catch (error) {
+
+            console.error(error);
+
+            detenerRenovacionAutomaticaTokens();
+
+            alert(error.message);
+
+        }
+
+    }, 30000);
+
+}
+
+function detenerRenovacionAutomaticaTokens() {
+
+    if (intervaloTokensEntradas !== null) {
+        clearInterval(intervaloTokensEntradas);
+        intervaloTokensEntradas = null;
     }
 
 }

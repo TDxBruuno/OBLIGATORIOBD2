@@ -70,6 +70,7 @@ public class TicketingService {
 
     public record ControlDispositivoRequest(long idFuncionario, long idDispositivo) {}
 
+    public record FuncionarioEventoSectorRequest(long idFuncionario, long idEventoSector) {}
     // =========================================================================
     // USUARIOS
     // =========================================================================
@@ -385,6 +386,99 @@ public class TicketingService {
             ps.setLong(2, request.idDispositivo());
             return ps;
         }, kh);
+        return Objects.requireNonNull(kh.getKey()).longValue();
+    }
+
+    public List<Map<String, Object>> listarControlesDeFuncionario(long idFuncionario) {
+
+        return jdbc.query("""
+            SELECT
+                cd.id_control,
+                cd.id_dispositivo,
+                d.descripcion
+            FROM control_dispositivo cd
+            JOIN dispositivo d ON d.id_dispositivo = cd.id_dispositivo
+            WHERE cd.id_funcionario = ?
+            ORDER BY cd.id_control
+            """,
+                (rs, rowNum) -> Map.of(
+                        "id_control", rs.getLong("id_control"),
+                        "id_dispositivo", rs.getLong("id_dispositivo"),
+                        "descripcion", rs.getString("descripcion")
+                ),
+                idFuncionario
+        );
+    }
+
+    public List<Map<String, Object>> listarFuncionarios() {
+        return jdbc.queryForList(
+                "SELECT u.id_usuario, u.mail, fv.num_legajo " +
+                        "FROM funcionario_validacion fv " +
+                        "JOIN usuarios u ON u.id_usuario = fv.id_usuario " +
+                        "ORDER BY u.mail"
+        );
+    }
+
+    public List<Map<String, Object>> listarEventoSectoresHabilitados() {
+        return jdbc.queryForList(
+                "SELECT es.id_evento_sector, ev.id_evento, ev.fecha, ev.hora, " +
+                        "eq_l.nombre AS equipo_local, eq_v.nombre AS equipo_visitante, " +
+                        "est.nombre AS estadio, s.nombre AS sector, es.precio, es.capacidad " +
+                        "FROM evento_sector es " +
+                        "JOIN evento ev ON ev.id_evento = es.id_evento " +
+                        "JOIN equipo eq_l ON eq_l.id_equipo = ev.equipo_local_id " +
+                        "JOIN equipo eq_v ON eq_v.id_equipo = ev.equipo_visitante_id " +
+                        "JOIN estadio est ON est.id_estadio = ev.id_estadio " +
+                        "JOIN sector s ON s.id_sector = es.id_sector " +
+                        "ORDER BY ev.fecha, ev.hora, est.nombre, s.nombre"
+        );
+    }
+
+    @Transactional
+    public long asignarFuncionarioEventoSector(FuncionarioEventoSectorRequest request) {
+        String tipoFuncionario = jdbc.queryForList(
+                        "SELECT tipo_usuario FROM usuarios WHERE id_usuario = ?",
+                        String.class,
+                        request.idFuncionario())
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException("El funcionario no existe"));
+
+        assertTipo(tipoFuncionario, "FUNCIONARIO");
+
+        Integer existeEventoSector = jdbc.queryForObject(
+                "SELECT COUNT(*) FROM evento_sector WHERE id_evento_sector = ?",
+                Integer.class,
+                request.idEventoSector());
+
+        if (existeEventoSector == null || existeEventoSector == 0) {
+            throw new ResourceNotFoundException("El sector habilitado para evento no existe");
+        }
+
+        Integer yaAsignado = jdbc.queryForObject(
+                "SELECT COUNT(*) FROM funcionario_evento_sector " +
+                        "WHERE id_funcionario = ? AND id_evento_sector = ?",
+                Integer.class,
+                request.idFuncionario(),
+                request.idEventoSector());
+
+        if (yaAsignado != null && yaAsignado > 0) {
+            throw new BusinessRuleException("El funcionario ya está asignado a ese sector del evento");
+        }
+
+        KeyHolder kh = new GeneratedKeyHolder();
+
+        jdbc.update(conn -> {
+            PreparedStatement ps = conn.prepareStatement(
+                    "INSERT INTO funcionario_evento_sector (id_funcionario, id_evento_sector) VALUES (?, ?)",
+                    Statement.RETURN_GENERATED_KEYS);
+
+            ps.setLong(1, request.idFuncionario());
+            ps.setLong(2, request.idEventoSector());
+
+            return ps;
+        }, kh);
+
         return Objects.requireNonNull(kh.getKey()).longValue();
     }
 

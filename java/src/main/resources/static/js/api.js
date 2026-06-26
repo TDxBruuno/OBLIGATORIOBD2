@@ -129,3 +129,37 @@ async function rechazarTransferencia(idTransferencia) {
     }
 }
 
+async function validarEntrada(datos) {
+    const response = await fetch("/api/entradas/validar", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(datos)
+    });
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Error al validar entrada");
+    }
+}
+
+async function renovarTokenEntrada(idEntrada) {
+    const response = await fetch(`/api/entradas/${idEntrada}/token`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            momento: new Date().toISOString()
+        })
+    });
+
+    if (response.ok) {
+        return await response.json();
+    }
+
+    const error = await response.json();
+    throw new Error(error.error || "Error al renovar token");
+}
+

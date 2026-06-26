@@ -512,8 +512,14 @@ public class TicketingService {
 
     @Transactional
     public void validarEntrada(ValidacionRequest request) {
+
         Map<String, Object> entrada = jdbc.queryForList(
-                        "SELECT codigo_token, fecha_validacion FROM entrada WHERE id_entrada = ?",
+                        "SELECT e.codigo_token, e.fecha_validacion, e.id_evento_sector, " +
+                                "ev.id_evento " +
+                                "FROM entrada e " +
+                                "JOIN evento_sector es ON es.id_evento_sector = e.id_evento_sector " +
+                                "JOIN evento ev ON ev.id_evento = es.id_evento " +
+                                "WHERE e.id_entrada = ?",
                         request.idEntrada())
                 .stream().findFirst()
                 .orElseThrow(() -> new ResourceNotFoundException("La entrada no existe"));
@@ -523,14 +529,51 @@ public class TicketingService {
         }
 
         if (!request.codigoToken().equals(entrada.get("codigo_token"))) {
-            throw new BusinessRuleException("El token QR no es válido o expiró");
+            throw new BusinessRuleException("El token no es válido o expiró");
         }
 
-        Integer existeControl = jdbc.queryForObject(
-                "SELECT COUNT(*) FROM control_dispositivo WHERE id_control = ?",
-                Integer.class, request.idControl());
-        if (existeControl == null || existeControl == 0) {
-            throw new BusinessRuleException("El dispositivo de control no existe");
+        Map<String, Object> control = jdbc.queryForList(
+                        "SELECT cd.id_control, cd.id_funcionario, u.tipo_usuario " +
+                                "FROM control_dispositivo cd " +
+                                "JOIN usuarios u ON u.id_usuario = cd.id_funcionario " +
+                                "WHERE cd.id_control = ?",
+                        request.idControl())
+                .stream().findFirst()
+                .orElseThrow(() -> new BusinessRuleException("El dispositivo de control no existe"));
+
+        if (!"FUNCIONARIO".equals(control.get("tipo_usuario"))) {
+            throw new BusinessRuleException("El control no pertenece a un funcionario");
+        }
+
+        long idFuncionario = ((Number) control.get("id_funcionario")).longValue();
+        long idEvento = ((Number) entrada.get("id_evento")).longValue();
+        long idEventoSector = ((Number) entrada.get("id_evento_sector")).longValue();
+
+        Integer asignadoAlEvento = jdbc.queryForObject(
+                "SELECT COUNT(*) " +
+                        "FROM funcionario_evento_sector fes " +
+                        "JOIN evento_sector es ON es.id_evento_sector = fes.id_evento_sector " +
+                        "WHERE fes.id_funcionario = ? " +
+                        "AND es.id_evento = ?",
+                Integer.class,
+                idFuncionario,
+                idEvento);
+
+        if (asignadoAlEvento == null || asignadoAlEvento == 0) {
+            throw new BusinessRuleException("El funcionario no está asignado a este evento");
+        }
+
+        Integer asignadoAlSector = jdbc.queryForObject(
+                "SELECT COUNT(*) " +
+                        "FROM funcionario_evento_sector " +
+                        "WHERE id_funcionario = ? " +
+                        "AND id_evento_sector = ?",
+                Integer.class,
+                idFuncionario,
+                idEventoSector);
+
+        if (asignadoAlSector == null || asignadoAlSector == 0) {
+            throw new BusinessRuleException("El funcionario no está asignado a este sector");
         }
 
         jdbc.update("UPDATE entrada SET id_control = ?, fecha_validacion = ? WHERE id_entrada = ?",

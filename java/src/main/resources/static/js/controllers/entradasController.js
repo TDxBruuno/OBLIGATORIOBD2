@@ -17,3 +17,23 @@ async function cargarMisEntradas() {
     }
 
 }
+
+async function renovarTokenDesdeEntrada(idEntrada) {
+
+    try {
+
+        await renovarTokenEntrada(idEntrada);
+
+        alert("Token renovado correctamente.");
+
+        cargarMisEntradas();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(error.message);
+
+    }
+
+}

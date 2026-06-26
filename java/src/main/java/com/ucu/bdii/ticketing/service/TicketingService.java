@@ -447,6 +447,16 @@ public class TicketingService {
             throw new BusinessRuleException("La entrada ya fue validada y no puede transferirse");
         }
 
+        Integer transferenciasPendientes = jdbc.queryForObject(
+                "SELECT COUNT(*) FROM transferencia_entrada " +
+                        "WHERE id_entrada = ? AND estado = 'PENDIENTE'",
+                Integer.class,
+                request.idEntrada());
+
+        if (transferenciasPendientes != null && transferenciasPendientes > 0) {
+            throw new BusinessRuleException("La entrada ya tiene una transferencia pendiente");
+        }
+
         Integer cantTransferencias = jdbc.queryForObject(
                 "SELECT COUNT(*) FROM transferencia_entrada WHERE id_entrada = ?",
                 Integer.class, request.idEntrada());
@@ -566,13 +576,39 @@ public class TicketingService {
 
     public List<Map<String, Object>> listarTransferenciasDeUsuario(long idUsuario) {
         return jdbc.queryForList(
-                "SELECT te.id_transferencia, te.id_entrada, te.fecha_transferencia, te.estado, " +
-                        "       te.id_usuario_transfiere, te.id_usuario_recibe, " +
-                        "       CASE WHEN te.id_usuario_transfiere = ? THEN 'ENVIADA' ELSE 'RECIBIDA' END AS direccion " +
+                "SELECT te.id_transferencia, " +
+                        "te.id_entrada, " +
+                        "te.fecha_transferencia, " +
+                        "te.estado, " +
+                        "uo.mail AS mail_origen, " +
+                        "ud.mail AS mail_destino, " +
+                        "eq_l.nombre AS equipo_local, " +
+                        "eq_v.nombre AS equipo_visitante, " +
+                        "ev.fecha AS fecha_evento, " +
+                        "ev.hora AS hora_evento, " +
+                        "est.nombre AS estadio, " +
+                        "s.nombre AS sector, " +
+                        "CASE " +
+                        "WHEN te.id_usuario_transfiere = ? THEN 'ENVIADA' " +
+                        "ELSE 'RECIBIDA' " +
+                        "END AS direccion " +
                         "FROM transferencia_entrada te " +
-                        "WHERE te.id_usuario_transfiere = ? OR te.id_usuario_recibe = ? " +
+                        "JOIN usuarios uo ON uo.id_usuario = te.id_usuario_transfiere " +
+                        "JOIN usuarios ud ON ud.id_usuario = te.id_usuario_recibe " +
+                        "JOIN entrada e ON e.id_entrada = te.id_entrada " +
+                        "JOIN evento_sector es ON es.id_evento_sector = e.id_evento_sector " +
+                        "JOIN evento ev ON ev.id_evento = es.id_evento " +
+                        "JOIN estadio est ON est.id_estadio = ev.id_estadio " +
+                        "JOIN sector s ON s.id_sector = es.id_sector " +
+                        "JOIN equipo eq_l ON eq_l.id_equipo = ev.equipo_local_id " +
+                        "JOIN equipo eq_v ON eq_v.id_equipo = ev.equipo_visitante_id " +
+                        "WHERE te.id_usuario_transfiere = ? " +
+                        "OR te.id_usuario_recibe = ? " +
                         "ORDER BY te.fecha_transferencia DESC",
-                idUsuario, idUsuario, idUsuario);
+                idUsuario,
+                idUsuario,
+                idUsuario
+        );
     }
 
     public List<Map<String, Object>> listarEntradasDeUsuario(long idUsuario) {

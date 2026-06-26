@@ -31,4 +31,7 @@ function mostrarInicio(usuario) {
             cerrarSesion();
             mostrarLogin();
         });
+
+    document.getElementById("btnTransferencias")
+        .addEventListener("click", cargarMisTransferencias);
 }

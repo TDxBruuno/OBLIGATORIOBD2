@@ -24,7 +24,7 @@ function mostrarInicio(usuario) {
             <button id="btnValidarEntrada">Validar entrada</button>
         `;
 
-    } else if (usuario.tipo_usuario === "ADMINISTRADOR") {
+    } else if (usuario.tipo_usuario === "ADMIN") {
 
         html += `
             <button id="btnAdministracion">Administración</button>
@@ -60,12 +60,10 @@ function mostrarInicio(usuario) {
         document.getElementById("btnValidarEntrada")
             .addEventListener("click", mostrarFuncionario);
 
-    } else if (usuario.tipo_usuario === "ADMINISTRADOR") {
+    } else if (usuario.tipo_usuario === "ADMIN") {
 
         document.getElementById("btnAdministracion")
-            .addEventListener("click", () => {
-                alert("Pantalla de administración en construcción.");
-            });
+            .addEventListener("click", mostrarAdministrador);
 
     }
 

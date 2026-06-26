@@ -163,3 +163,141 @@ async function renovarTokenEntrada(idEntrada) {
     throw new Error(error.error || "Error al renovar token");
 }
 
+async function registrarEstadio(datos) {
+
+    const response = await fetch("/api/estadios", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(datos)
+    });
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Error al agregar estadio");
+    }
+
+    return await response.json();
+}
+
+async function obtenerEstadios() {
+
+    const response = await fetch("/api/estadios");
+
+    if (response.ok) {
+        return await response.json();
+    }
+
+    const error = await response.json();
+    throw new Error(error.error || "Error al obtener estadios");
+}
+
+async function registrarSector(idEstadio, datos) {
+
+    const response = await fetch(`/api/estadios/${idEstadio}/sectores`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(datos)
+    });
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Error al agregar sector");
+    }
+
+    return await response.json();
+}
+
+async function obtenerEquipos() {
+
+    const response = await fetch("/api/equipos");
+
+    if (response.ok) {
+        return await response.json();
+    }
+
+    const error = await response.json();
+    throw new Error(error.error || "Error al obtener equipos");
+}
+
+async function crearEventoApi(datos) {
+
+    const response = await fetch("/api/eventos", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(datos)
+    });
+
+    if (response.ok) {
+        return await response.json();
+    }
+
+    const error = await response.json();
+    throw new Error(error.error || "Error al crear evento");
+}
+
+async function registrarEquipo(datos) {
+
+    const response = await fetch("/api/equipos", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(datos)
+    });
+
+    if (response.ok) {
+        return await response.json();
+    }
+
+    const error = await response.json();
+    throw new Error(error.error || "Error al agregar equipo");
+}
+
+async function obtenerEventos() {
+
+    const response = await fetch("/api/eventos");
+
+    if (response.ok) {
+        return await response.json();
+    }
+
+    const error = await response.json();
+    throw new Error(error.error || "Error al obtener eventos");
+}
+
+async function obtenerSectores() {
+
+    const response = await fetch("/api/sectores");
+
+    if (response.ok) {
+        return await response.json();
+    }
+
+    const error = await response.json();
+    throw new Error(error.error || "Error al obtener sectores");
+}
+
+async function habilitarSectorApi(idEvento, datos) {
+
+    const response = await fetch(`/api/eventos/${idEvento}/sectores`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(datos)
+    });
+
+    if (response.ok) {
+        return await response.json();
+    }
+
+    const error = await response.json();
+    throw new Error(error.error || "Error al habilitar sector");
+}
+

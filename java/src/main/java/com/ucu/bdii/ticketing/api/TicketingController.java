@@ -92,10 +92,30 @@ public class TicketingController {
         return new IdResponse(service.registrarEstadio(req.nombre()));
     }
 
+    @GetMapping("/estadios")
+    public List<Map<String, Object>> listarEstadios() {
+        return service.listarEstadios();
+    }
+
+    @GetMapping("/equipos")
+    public List<Map<String, Object>> listarEquipos() {
+        return service.listarEquipos();
+    }
+
+    @GetMapping("/eventos")
+    public List<Map<String, Object>> listarEventos() {
+        return service.listarEventos();
+    }
+
+    @GetMapping("/sectores")
+    public List<Map<String, Object>> listarSectores() {
+        return service.listarSectores();
+    }
+
     @PostMapping("/equipos")
     @ResponseStatus(HttpStatus.CREATED)
     public IdResponse crearEquipo(@Valid @RequestBody EquipoRequest req) {
-        return new IdResponse(service.registrarEquipo(req.nombre(), req.pais()));
+        return new IdResponse(service.registrarEquipo(req.nombre()));
     }
 
     @PostMapping("/estadios/{idEstadio}/sectores")
@@ -267,7 +287,7 @@ public class TicketingController {
 
     public record EstadioRequest(@NotBlank String nombre) {}
 
-    public record EquipoRequest(@NotBlank String nombre, @NotBlank String pais) {}
+    public record EquipoRequest(@NotBlank String nombre) {}
 
     public record SectorRequest(@NotBlank String nombre, @Positive int capMax) {}
 

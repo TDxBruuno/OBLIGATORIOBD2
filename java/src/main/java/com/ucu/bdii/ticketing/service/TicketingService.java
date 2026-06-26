@@ -144,16 +144,102 @@ public class TicketingService {
         return Objects.requireNonNull(kh.getKey()).longValue();
     }
 
+    public List<Map<String, Object>> listarEstadios() {
+
+        return jdbc.query("""
+            SELECT
+                id_estadio,
+                nombre
+            FROM estadio
+            ORDER BY nombre
+            """,
+                (rs, rowNum) -> Map.of(
+                        "id_estadio", rs.getLong("id_estadio"),
+                        "nombre", rs.getString("nombre")
+                )
+        );
+
+    }
+
+    public List<Map<String, Object>> listarEquipos() {
+
+        return jdbc.query("""
+            SELECT
+                id_equipo,
+                nombre
+            FROM equipo
+            ORDER BY nombre
+            """,
+                (rs, rowNum) -> Map.of(
+                        "id_equipo", rs.getLong("id_equipo"),
+                        "nombre", rs.getString("nombre")
+                )
+        );
+
+    }
+
+    public List<Map<String, Object>> listarEventos() {
+
+        return jdbc.query("""
+            SELECT
+                ev.id_evento,
+                ev.fecha,
+                ev.hora,
+                el.nombre AS equipo_local,
+                evis.nombre AS equipo_visitante,
+                est.nombre AS estadio
+            FROM evento ev
+            JOIN equipo el ON el.id_equipo = ev.equipo_local_id
+            JOIN equipo evis ON evis.id_equipo = ev.equipo_visitante_id
+            JOIN estadio est ON est.id_estadio = ev.id_estadio
+            ORDER BY ev.fecha, ev.hora
+            """,
+                (rs, rowNum) -> Map.of(
+                        "id_evento", rs.getLong("id_evento"),
+                        "fecha", rs.getDate("fecha").toString(),
+                        "hora", rs.getTime("hora").toString(),
+                        "equipo_local", rs.getString("equipo_local"),
+                        "equipo_visitante", rs.getString("equipo_visitante"),
+                        "estadio", rs.getString("estadio")
+                )
+        );
+    }
+
+    public List<Map<String, Object>> listarSectores() {
+
+        return jdbc.query("""
+            SELECT
+                s.id_sector,
+                s.nombre,
+                s.cap_max,
+                e.nombre AS estadio
+            FROM sector s
+            JOIN estadio e ON e.id_estadio = s.id_estadio
+            ORDER BY e.nombre, s.nombre
+            """,
+                (rs, rowNum) -> Map.of(
+                        "id_sector", rs.getLong("id_sector"),
+                        "nombre", rs.getString("nombre"),
+                        "cap_max", rs.getInt("cap_max"),
+                        "estadio", rs.getString("estadio")
+                )
+        );
+    }
+
     @Transactional
-    public long registrarEquipo(String nombre, String pais) {
+    public long registrarEquipo(String nombre) {
         KeyHolder kh = new GeneratedKeyHolder();
+
         jdbc.update(conn -> {
             PreparedStatement ps = conn.prepareStatement(
-                    "INSERT INTO equipo (nombre, pais) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
+                    "INSERT INTO equipo (nombre) VALUES (?)",
+                    Statement.RETURN_GENERATED_KEYS);
+
             ps.setString(1, nombre);
-            ps.setString(2, pais);
+
             return ps;
         }, kh);
+
         return Objects.requireNonNull(kh.getKey()).longValue();
     }
 

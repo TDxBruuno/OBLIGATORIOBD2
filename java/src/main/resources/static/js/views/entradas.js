@@ -26,6 +26,9 @@ function mostrarEntradas(entradas) {
                     <p><strong>Estadio:</strong> ${entrada.estadio}</p>
                     <p><strong>Sector:</strong> ${entrada.sector}</p>
                     <p><strong>Estado:</strong> ${entrada.estado_entrada}</p>
+                    <button onclick="iniciarTransferencia(${entrada.id_entrada})">
+                        Transferir
+                    </button>
 
                 </div>
             `;

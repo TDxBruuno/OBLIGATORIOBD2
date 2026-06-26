@@ -125,6 +125,11 @@ public class TicketingController {
         return new IdResponse(id);
     }
 
+    @GetMapping("/eventos/sectores-disponibles")
+    public List<Map<String, Object>> sectoresDisponiblesParaCompra() {
+        return service.listarSectoresDisponiblesParaCompra();
+    }
+
     // =========================================================================
     // DISPOSITIVOS
     // =========================================================================

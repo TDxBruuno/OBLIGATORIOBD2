@@ -302,6 +302,30 @@ public class TicketingService {
         return Objects.requireNonNull(kh.getKey()).longValue();
     }
 
+    public List<Map<String, Object>> listarSectoresDisponiblesParaCompra() {
+        return jdbc.queryForList(
+                "SELECT es.id_evento_sector, ev.id_evento, " +
+                        "eq_l.nombre AS equipo_local, " +
+                        "eq_v.nombre AS equipo_visitante, " +
+                        "ev.fecha, ev.hora, " +
+                        "est.nombre AS estadio, " +
+                        "s.nombre AS sector, " +
+                        "es.precio, es.capacidad, " +
+                        "(es.capacidad - COUNT(e.id_entrada)) AS disponibles " +
+                        "FROM evento_sector es " +
+                        "JOIN evento ev ON ev.id_evento = es.id_evento " +
+                        "JOIN equipo eq_l ON eq_l.id_equipo = ev.equipo_local_id " +
+                        "JOIN equipo eq_v ON eq_v.id_equipo = ev.equipo_visitante_id " +
+                        "JOIN estadio est ON est.id_estadio = ev.id_estadio " +
+                        "JOIN sector s ON s.id_sector = es.id_sector " +
+                        "LEFT JOIN entrada e ON e.id_evento_sector = es.id_evento_sector " +
+                        "GROUP BY es.id_evento_sector, ev.id_evento, eq_l.nombre, eq_v.nombre, " +
+                        "ev.fecha, ev.hora, est.nombre, s.nombre, es.precio, es.capacidad " +
+                        "HAVING disponibles > 0 " +
+                        "ORDER BY ev.fecha, ev.hora, est.nombre, s.nombre"
+        );
+    }
+
     // =========================================================================
     // COMPRAS
     // =========================================================================

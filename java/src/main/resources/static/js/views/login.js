@@ -21,7 +21,7 @@ function mostrarLogin() {
                 ¿No estás registrado?
             </p>
 
-            <button class="secundario">
+            <button id="btnRegistrarme" class="secundario">
                 Registrarme
             </button>
 
@@ -32,5 +32,6 @@ function mostrarLogin() {
         const mail = document.getElementById("mail").value.trim();
         manejarLogin(mail);
     });
+    document.getElementById("btnRegistrarme").addEventListener("click", mostrarRegistro);
 }
 

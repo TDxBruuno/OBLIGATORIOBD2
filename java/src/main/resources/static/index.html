@@ -2,51 +2,34 @@
 <html lang="es">
 
 <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Mundial Ticketing</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mundial Ticketing</title>
 
-        <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
-<div id="app">
+<div id="app"></div>
 
-    <div class="login-container">
-
-        <h1>Mundial Ticketing</h1>
-
-        <p class="subtitulo">
-            Sistema oficial de gestión de entradas
-        </p>
-
-        <input
-                type="email"
-                id="mail"
-                placeholder="Correo electrónico">
-
-        <button id="btnContinuar">
-            Continuar
-        </button>
-
-        <p class="registro">
-            ¿No estás registrado?
-        </p>
-
-        <button class="secundario">
-            Registrarme
-        </button>
-
-    </div>
-
-</div>
 <script src="js/session.js"></script>
 <script src="js/api.js"></script>
-<script src="js/views/inicio.js"></script>
-<script src="js/controllers/loginController.js"></script>
-<script src="js/views/login.js"></script>
-<script src="js/app.js"></script>
-</body>
 
+<script src="js/controllers/loginController.js"></script>
+<script src="js/controllers/registroController.js"></script>
+<script src="js/controllers/entradasController.js"></script>
+<script src="js/controllers/comprasController.js"></script>
+<script src="js/controllers/comprarController.js"></script>
+
+<script src="js/views/inicio.js"></script>
+<script src="js/views/login.js"></script>
+<script src="js/views/registro.js"></script>
+<script src="js/views/entradas.js"></script>
+<script src="js/views/compras.js"></script>
+<script src="js/views/comprar.js"></script>
+
+<script src="js/app.js"></script>
+
+</body>
 </html>

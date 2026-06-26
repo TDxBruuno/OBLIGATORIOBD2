@@ -301,3 +301,151 @@ async function habilitarSectorApi(idEvento, datos) {
     throw new Error(error.error || "Error al habilitar sector");
 }
 
+async function registrarFuncionario(datos) {
+    const response = await fetch("/api/usuarios/funcionarios", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(datos)
+    });
+
+    if (response.ok) {
+        return await response.json();
+    }
+
+    const error = await response.json();
+    throw new Error(error.error || "Error al registrar funcionario");
+}
+
+async function registrarAdministrador(datos) {
+    const response = await fetch("/api/usuarios/admins", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(datos)
+    });
+
+    if (response.ok) {
+        return await response.json();
+    }
+
+    const error = await response.json();
+    throw new Error(error.error || "Error al registrar administrador");
+}
+
+async function registrarDispositivo(datos) {
+
+    const response = await fetch("/api/dispositivos", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(datos)
+    });
+
+    if (response.ok) {
+        return await response.json();
+    }
+
+    const error = await response.json();
+    throw new Error(error.error || "Error al registrar dispositivo");
+}
+
+async function vincularDispositivo(datos) {
+
+    const response = await fetch("/api/controles-dispositivo", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(datos)
+    });
+
+    if (response.ok) {
+        return await response.json();
+    }
+
+    const error = await response.json();
+    throw new Error(error.error || "Error al vincular dispositivo");
+}
+
+async function obtenerControlesDeFuncionario(idFuncionario) {
+
+    const response = await fetch(`/api/funcionarios/${idFuncionario}/controles`);
+
+    if (response.ok) {
+        return await response.json();
+    }
+
+    const error = await response.json();
+    throw new Error(error.error || "Error al obtener dispositivos del funcionario");
+}
+
+async function obtenerFuncionarios() {
+
+    const response = await fetch("/api/funcionarios");
+
+    if (response.ok) {
+        return await response.json();
+    }
+
+    const error = await response.json();
+    throw new Error(error.error || "Error al obtener funcionarios");
+}
+
+async function obtenerEventoSectoresHabilitados() {
+
+    const response = await fetch("/api/eventos/sectores-habilitados");
+
+    if (response.ok) {
+        return await response.json();
+    }
+
+    const error = await response.json();
+    throw new Error(error.error || "Error al obtener sectores habilitados");
+}
+
+async function asignarFuncionarioEventoSectorApi(datos) {
+
+    const response = await fetch("/api/funcionarios/asignaciones-evento-sector", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(datos)
+    });
+
+    if (response.ok) {
+        return await response.json();
+    }
+
+    const error = await response.json();
+    throw new Error(error.error || "Error al asignar funcionario");
+}
+
+async function obtenerEventosMasEntradas() {
+
+    const response = await fetch("/api/estadisticas/eventos-mas-entradas");
+
+    if (response.ok) {
+        return await response.json();
+    }
+
+    const error = await response.json();
+    throw new Error(error.error || "Error al obtener eventos con más entradas");
+}
+
+async function obtenerMayoresCompradores() {
+
+    const response = await fetch("/api/estadisticas/mayores-compradores");
+
+    if (response.ok) {
+        return await response.json();
+    }
+
+    const error = await response.json();
+    throw new Error(error.error || "Error al obtener ranking de compradores");
+}
+

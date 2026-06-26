@@ -150,6 +150,29 @@ public class TicketingController {
         return service.listarSectoresDisponiblesParaCompra();
     }
 
+    @GetMapping("/funcionarios")
+    public List<Map<String, Object>> listarFuncionarios() {
+        return service.listarFuncionarios();
+    }
+
+    @GetMapping("/eventos/sectores-habilitados")
+    public List<Map<String, Object>> listarEventoSectoresHabilitados() {
+        return service.listarEventoSectoresHabilitados();
+    }
+
+    @PostMapping("/funcionarios/asignaciones-evento-sector")
+    @ResponseStatus(HttpStatus.CREATED)
+    public IdResponse asignarFuncionarioEventoSector(
+            @Valid @RequestBody AsignacionFuncionarioEventoSectorRequest req) {
+
+        long id = service.asignarFuncionarioEventoSector(
+                new TicketingService.FuncionarioEventoSectorRequest(
+                        req.idFuncionario(),
+                        req.idEventoSector()));
+
+        return new IdResponse(id);
+    }
+
     // =========================================================================
     // DISPOSITIVOS
     // =========================================================================
@@ -165,6 +188,11 @@ public class TicketingController {
     public IdResponse crearControl(@Valid @RequestBody ControlDispositivoRequest req) {
         return new IdResponse(service.registrarControlDispositivo(
                 new TicketingService.ControlDispositivoRequest(req.idFuncionario(), req.idDispositivo())));
+    }
+
+    @GetMapping("/funcionarios/{idFuncionario}/controles")
+    public List<Map<String, Object>> listarControlesDeFuncionario(@PathVariable long idFuncionario) {
+        return service.listarControlesDeFuncionario(idFuncionario);
     }
 
     // =========================================================================
@@ -329,4 +357,8 @@ public class TicketingController {
             @NotNull Instant momento) {}
 
     public record TokenRequest(@NotNull Instant momento) {}
+
+    public record AsignacionFuncionarioEventoSectorRequest(
+            @Positive long idFuncionario,
+            @Positive long idEventoSector) {}
 }

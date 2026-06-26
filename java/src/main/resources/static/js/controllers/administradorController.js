@@ -206,3 +206,76 @@ async function guardarSectorEvento() {
 
     }
 }
+
+async function asignarFuncionarioEventoSector() {
+
+    try {
+
+        const funcionarios = await obtenerFuncionarios();
+        const eventoSectores = await obtenerEventoSectoresHabilitados();
+
+        if (funcionarios.length === 0) {
+            alert("No hay funcionarios registrados.");
+            return;
+        }
+
+        if (eventoSectores.length === 0) {
+            alert("No hay sectores habilitados para eventos.");
+            return;
+        }
+
+        mostrarFormularioAsignarFuncionario(funcionarios, eventoSectores);
+
+    } catch (error) {
+
+        console.error(error);
+        alert(error.message);
+
+    }
+}
+
+async function guardarAsignacionFuncionarioEventoSector() {
+
+    const idFuncionario = Number(document.getElementById("asignarFuncionario").value);
+    const idEventoSector = Number(document.getElementById("asignarEventoSector").value);
+
+    if (!idFuncionario || !idEventoSector) {
+        alert("Debe seleccionar un funcionario y un sector del evento.");
+        return;
+    }
+
+    try {
+
+        await asignarFuncionarioEventoSectorApi({
+            idFuncionario: idFuncionario,
+            idEventoSector: idEventoSector
+        });
+
+        alert("Funcionario asignado correctamente.");
+
+        mostrarAdministrador();
+
+    } catch (error) {
+
+        console.error(error);
+        alert(error.message);
+
+    }
+}
+
+async function cargarEstadisticas() {
+
+    try {
+
+        const eventos = await obtenerEventosMasEntradas();
+        const compradores = await obtenerMayoresCompradores();
+
+        mostrarEstadisticas(eventos, compradores);
+
+    } catch (error) {
+
+        console.error(error);
+        alert(error.message);
+
+    }
+}

@@ -1,7 +1,5 @@
 async function manejarRegistro(datos) {
 
-    console.log("Entró al registro");
-
     for (const valor of Object.values(datos)) {
         if (valor === "") {
             alert("Debe completar todos los campos.");
@@ -9,26 +7,44 @@ async function manejarRegistro(datos) {
         }
     }
 
-    const request = {
-        base: {
-            mail: datos.mail,
-            docPais: datos.docPais,
-            docTipo: datos.docTipo,
-            docNumero: datos.docNumero,
-            dirPais: datos.dirPais,
-            dirLocalidad: datos.dirLocalidad,
-            dirCalle: datos.dirCalle,
-            dirNumero: datos.dirNumero,
-            dirCodigoPostal: datos.dirCodigoPostal,
-            telefonos: [datos.telefono]
-        },
-        fechaRegistro: new Date().toISOString().substring(0, 10),
-        estado: "ACTIVO"
+    const base = {
+        mail: datos.mail,
+        docPais: datos.docPais,
+        docTipo: datos.docTipo,
+        docNumero: datos.docNumero,
+        dirPais: datos.dirPais,
+        dirLocalidad: datos.dirLocalidad,
+        dirCalle: datos.dirCalle,
+        dirNumero: datos.dirNumero,
+        dirCodigoPostal: datos.dirCodigoPostal,
+        telefonos: [datos.telefono]
     };
 
     try {
 
-        await registrarUsuarioGeneral(request);
+        if (datos.tipoUsuario === "GENERAL") {
+
+            await registrarUsuarioGeneral({
+                base: base,
+                fechaRegistro: new Date().toISOString().substring(0, 10),
+                estado: "ACTIVO"
+            });
+
+        } else if (datos.tipoUsuario === "FUNCIONARIO") {
+
+            await registrarFuncionario({
+                base: base,
+                legajo: datos.legajo
+            });
+
+        } else if (datos.tipoUsuario === "ADMIN") {
+
+            await registrarAdministrador({
+                base: base,
+                fechaAsignacion: datos.fechaAsignacion
+            });
+
+        }
 
         alert("Usuario registrado correctamente.");
 
@@ -36,6 +52,7 @@ async function manejarRegistro(datos) {
 
     } catch (error) {
 
+        console.error(error);
         alert(error.message);
 
     }

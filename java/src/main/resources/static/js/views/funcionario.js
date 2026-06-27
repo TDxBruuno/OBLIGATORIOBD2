@@ -1,45 +1,81 @@
 function mostrarFuncionario() {
 
     document.getElementById("app").innerHTML = `
-        <div class="login-container">
+        <div class="adm-wrapper">
+            <nav class="adm-nav">
+                <div class="adm-nav-brand">
+                    <span class="adm-nav-badge">⚽ FIFA</span>
+                    Ticketing Mundial
+                </div>
+                <span class="adm-nav-role">Funcionario</span>
+            </nav>
 
-            <h1>Validación de entrada</h1>
+            <div class="adm-content">
+                <div class="adm-card">
 
-            <input
-                id="idEntradaValidar"
-                type="number"
-                placeholder="ID de entrada">
+                    <p class="adm-page-label">Control de acceso</p>
+                    <h1 class="adm-page-title">Validar entrada</h1>
 
-            <input
-                id="tokenValidar"
-                type="text"
-                placeholder="Token de la entrada">
+                    <div class="adm-form">
+                        <div class="adm-form-grid2">
+                            <div class="adm-field">
+                                <label class="adm-label">ID de entrada</label>
+                                <input
+                                    id="idEntradaValidar"
+                                    class="adm-input"
+                                    type="number"
+                                    placeholder="Ej. 10042">
+                            </div>
+                            <div class="adm-field">
+                                <label class="adm-label">Token</label>
+                                <input
+                                    id="tokenValidar"
+                                    class="adm-input"
+                                    type="text"
+                                    placeholder="Token de la entrada">
+                            </div>
+                        </div>
 
-            <select id="controlFuncionario">
-                <option>Cargando dispositivos...</option>
-            </select>
+                        <div class="adm-field">
+                            <label class="adm-label">Dispositivo de control</label>
+                            <select id="controlFuncionario" class="adm-select">
+                                <option>Cargando dispositivos...</option>
+                            </select>
+                        </div>
 
-            <button id="btnValidarEntrada">
-                Validar entrada
-            </button>
+                        <div class="adm-form-actions">
+                            <button id="btnValidarEntrada" class="adm-btn-primary">
+                                Validar entrada →
+                            </button>
+                        </div>
+                    </div>
 
-            <hr style="margin:25px 0">
+                    <hr class="adm-divider">
 
-            <h2>Registrar dispositivo</h2>
+                    <p class="adm-page-label">Dispositivos</p>
+                    <h2 class="adm-page-title" style="font-size:18px; margin-bottom:20px;">Registrar dispositivo</h2>
 
-            <input
-                id="descripcionDispositivo"
-                type="text"
-                placeholder="Descripción del dispositivo">
+                    <div class="adm-form">
+                        <div class="adm-field">
+                            <label class="adm-label">Descripción</label>
+                            <input
+                                id="descripcionDispositivo"
+                                class="adm-input"
+                                type="text"
+                                placeholder="Ej. Scanner puerta norte">
+                        </div>
+                        <div class="adm-form-actions">
+                            <button id="btnRegistrarDispositivo" class="adm-btn-primary">
+                                Registrar dispositivo →
+                            </button>
+                            <button id="btnVolverInicio" class="adm-btn-volver">
+                                ← Volver
+                            </button>
+                        </div>
+                    </div>
 
-            <button id="btnRegistrarDispositivo">
-                Registrar dispositivo
-            </button>
-
-            <button id="btnVolverInicio" class="secundario">
-                Volver
-            </button>
-
+                </div>
+            </div>
         </div>
     `;
 
@@ -53,5 +89,4 @@ function mostrarFuncionario() {
 
     document.getElementById("btnVolverInicio")
         .addEventListener("click", () => mostrarInicio(obtenerUsuarioActual()));
-
 }

@@ -1,32 +1,73 @@
 function mostrarRegistro() {
     document.getElementById("app").innerHTML = `
-        <div class="login-container">
-            <h1>Registro</h1>
+        <div class="reg-card">
 
-            <select id="regTipoUsuario">
-                <option value="GENERAL">Usuario general</option>
-                <option value="FUNCIONARIO">Funcionario de validación</option>
-                <option value="ADMIN">Administrador país sede</option>
-            </select>
+            <div class="reg-left">
+                <svg class="login-ball" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="50" r="48" fill="white"/>
+                    <path d="M50 2 L62 18 L80 12 L80 32 L98 38 L86 52 L94 70 L76 72 L70 90 L50 82 L30 90 L24 72 L6 70 L14 52 L2 38 L20 32 L20 12 L38 18 Z" fill="none" stroke="black" stroke-width="1.5"/>
+                </svg>
+                <div>
+                    <div class="login-badge">Mundial 2026</div>
+                    <h2>Creá tu cuenta y viví el mundial</h2>
+                    <p>Registrate para comprar, transferir y gestionar tus entradas al Mundial 2026.</p>
+                </div>
+            </div>
 
-            <input id="regMail" type="email" placeholder="Correo electrónico">
+            <div class="reg-right">
+                <div class="login-logo">
+                    <div class="login-logo-icon">⚽</div>
+                    <span>Mundial Ticketing</span>
+                </div>
 
-            <input id="regDocPais" type="text" placeholder="País documento">
-            <input id="regDocTipo" type="text" placeholder="Tipo documento">
-            <input id="regDocNumero" type="text" placeholder="Número documento">
+                <h1>Crear cuenta</h1>
+                <p class="subtitulo">Completá tus datos para registrarte</p>
 
-            <input id="regDirPais" type="text" placeholder="País dirección">
-            <input id="regDirLocalidad" type="text" placeholder="Localidad">
-            <input id="regDirCalle" type="text" placeholder="Calle">
-            <input id="regDirNumero" type="text" placeholder="Número">
-            <input id="regDirCodigoPostal" type="text" placeholder="Código postal">
+                <div class="section-label">Tipo de cuenta</div>
+                <div class="reg-grid1">
+                    <select id="regTipoUsuario">
+                        <option value="GENERAL">Usuario general</option>
+                        <option value="FUNCIONARIO">Funcionario de validación</option>
+                        <option value="ADMIN">Administrador país sede</option>
+                    </select>
+                </div>
 
-            <input id="regTelefono" type="text" placeholder="Teléfono">
+                <div class="section-label">Cuenta</div>
+                <div class="reg-grid1">
+                    <input id="regMail" type="email" placeholder="Correo electrónico">
+                </div>
 
-            <div id="camposExtraRegistro"></div>
+                <div class="section-label">Documento</div>
+                <div class="reg-grid3">
+                    <input id="regDocPais" type="text" placeholder="País">
+                    <input id="regDocTipo" type="text" placeholder="Tipo">
+                    <input id="regDocNumero" type="text" placeholder="Número">
+                </div>
 
-            <button id="btnCrearCuenta">Crear cuenta</button>
-            <button id="btnVolverLogin" class="secundario">Volver</button>
+                <div class="section-label">Dirección</div>
+                <div class="reg-grid2">
+                    <input id="regDirPais" type="text" placeholder="País">
+                    <input id="regDirLocalidad" type="text" placeholder="Localidad">
+                </div>
+                <div class="reg-grid3">
+                    <input id="regDirCalle" type="text" placeholder="Calle">
+                    <input id="regDirNumero" type="text" placeholder="Número">
+                    <input id="regDirCodigoPostal" type="text" placeholder="Código postal">
+                </div>
+
+                <div class="section-label">Contacto</div>
+                <div class="reg-grid1">
+                    <input id="regTelefono" type="text" placeholder="Teléfono">
+                </div>
+
+                <div id="camposExtraRegistro"></div>
+
+                <div class="btn-row">
+                    <button id="btnVolverLogin" class="secundario">Volver</button>
+                    <button id="btnCrearCuenta" class="btn-primary">Crear cuenta</button>
+                </div>
+            </div>
+
         </div>
     `;
 
@@ -39,7 +80,6 @@ function mostrarRegistro() {
         .addEventListener("click", mostrarLogin);
 
     document.getElementById("btnCrearCuenta").addEventListener("click", () => {
-
         const datos = {
             tipoUsuario: document.getElementById("regTipoUsuario").value,
             mail: document.getElementById("regMail").value.trim(),

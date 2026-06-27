@@ -1,427 +1,405 @@
+/* =============================================
+   NAVBAR
+   ============================================= */
+function renderNav(titulo = "") {
+    return `
+        <nav class="adm-nav">
+            <div class="adm-nav-brand">
+                <span class="adm-nav-badge">⚽ FIFA</span>
+                Ticketing Mundial
+            </div>
+            <span class="adm-nav-role">${titulo}</span>
+        </nav>
+    `;
+}
+
+/* =============================================
+   PANEL PRINCIPAL DE ADMINISTRACIÓN
+   ============================================= */
 function mostrarAdministrador() {
 
     document.getElementById("app").innerHTML = `
-        <div class="login-container">
+        <div class="adm-wrapper">
+            ${renderNav("Administrador")}
+            <div class="adm-content">
+                <div class="adm-card">
+                    <p class="adm-page-label">Panel de control</p>
+                    <h1 class="adm-page-title">Administración</h1>
 
-            <h1>Administración</h1>
+                    <div class="adm-actions-grid">
+                        <button class="adm-action-btn" id="btnCrearEstadio">
+                            <span class="adm-action-icon">🏟️</span>
+                            <span class="adm-action-label">Agregar estadio</span>
+                            <span class="adm-action-desc">Registrar nueva sede</span>
+                        </button>
+                        <button class="adm-action-btn" id="btnCrearSector">
+                            <span class="adm-action-icon">🗺️</span>
+                            <span class="adm-action-label">Agregar sector</span>
+                            <span class="adm-action-desc">Sector en estadio existente</span>
+                        </button>
+                        <button class="adm-action-btn" id="btnCrearEquipo">
+                            <span class="adm-action-icon">🚩</span>
+                            <span class="adm-action-label">Agregar equipo</span>
+                            <span class="adm-action-desc">Registrar selección</span>
+                        </button>
+                        <button class="adm-action-btn" id="btnCrearEvento">
+                            <span class="adm-action-icon">📅</span>
+                            <span class="adm-action-label">Crear evento</span>
+                            <span class="adm-action-desc">Nuevo partido</span>
+                        </button>
+                        <button class="adm-action-btn" id="btnHabilitarSector">
+                            <span class="adm-action-icon">✅</span>
+                            <span class="adm-action-label">Habilitar sector</span>
+                            <span class="adm-action-desc">Para un evento puntual</span>
+                        </button>
+                        <button class="adm-action-btn" id="btnAsignarFuncionarioEventoSector">
+                            <span class="adm-action-icon">👤</span>
+                            <span class="adm-action-label">Asignar funcionario</span>
+                            <span class="adm-action-desc">A evento-sector</span>
+                        </button>
+                    </div>
 
-            <button id="btnCrearEstadio">
-                Agregar estadio
-            </button>
+                    <button class="adm-action-btn adm-action-btn-full" id="btnEstadisticas">
+                        <span class="adm-action-icon">📊</span>
+                        <div>
+                            <div class="adm-action-label">Estadísticas</div>
+                            <div class="adm-action-desc">Ventas y compradores destacados</div>
+                        </div>
+                    </button>
 
-            <button id="btnCrearSector">
-                Agregar sector a estadio
-            </button>
-
-            <button id="btnCrearEquipo">
-                Agregar equipo
-            </button>
-
-            <button id="btnCrearEvento">
-                Crear evento
-            </button>
-
-            <button id="btnHabilitarSector">
-                Habilitar sector para evento
-            </button>
-
-            <button id="btnAsignarFuncionarioEventoSector">
-                Asignar funcionario a evento-sector
-            </button>
-
-            <button id="btnEstadisticas">
-                Estadísticas
-            </button>
-
-            <button id="btnVolver" class="secundario">
-                Volver
-            </button>
-
+                    <button class="adm-btn-volver" id="btnVolver">← Cerrar sesión</button>
+                </div>
+            </div>
         </div>
     `;
 
-    document.getElementById("btnCrearEstadio")
-        .addEventListener("click", crearEstadio);
-
-    document.getElementById("btnCrearSector")
-        .addEventListener("click", crearSector);
-
-    document.getElementById("btnCrearEquipo")
-        .addEventListener("click", crearEquipo);
-
-    document.getElementById("btnCrearEvento")
-        .addEventListener("click", crearEvento);
-
-    document.getElementById("btnHabilitarSector")
-        .addEventListener("click", habilitarSectorEvento);
-
-    document.getElementById("btnAsignarFuncionarioEventoSector")
-        .addEventListener("click", asignarFuncionarioEventoSector);
-
-    document.getElementById("btnEstadisticas")
-        .addEventListener("click", cargarEstadisticas);
-
-    document.getElementById("btnVolver")
-        .addEventListener("click", () => mostrarInicio(obtenerUsuarioActual()));
+    document.getElementById("btnCrearEstadio").addEventListener("click", crearEstadio);
+    document.getElementById("btnCrearSector").addEventListener("click", crearSector);
+    document.getElementById("btnCrearEquipo").addEventListener("click", crearEquipo);
+    document.getElementById("btnCrearEvento").addEventListener("click", crearEvento);
+    document.getElementById("btnHabilitarSector").addEventListener("click", habilitarSectorEvento);
+    document.getElementById("btnAsignarFuncionarioEventoSector").addEventListener("click", asignarFuncionarioEventoSector);
+    document.getElementById("btnEstadisticas").addEventListener("click", cargarEstadisticas);
+    document.getElementById("btnVolver").addEventListener("click", () => mostrarInicio(obtenerUsuarioActual()));
 }
 
+/* =============================================
+   FORMULARIO: SECTOR
+   ============================================= */
 function mostrarFormularioSector(estadios) {
 
-    let opcionesEstadios = "";
-
-    for (const estadio of estadios) {
-        opcionesEstadios += `
-            <option value="${estadio.id_estadio}">
-                ${estadio.nombre}
-            </option>
-        `;
-    }
+    const opcionesEstadios = estadios.map(e =>
+        `<option value="${e.id_estadio}">${e.nombre}</option>`
+    ).join("");
 
     document.getElementById("app").innerHTML = `
-        <div class="login-container">
+        <div class="adm-wrapper">
+            ${renderNav("Administrador")}
+            <div class="adm-content">
+                <div class="adm-card">
+                    <p class="adm-page-label">Estadios</p>
+                    <h1 class="adm-page-title">Agregar sector</h1>
 
-            <h1>Agregar sector</h1>
-
-            <input
-                id="sectorNombre"
-                type="text"
-                placeholder="Nombre del sector">
-
-            <input
-                id="sectorCapacidad"
-                type="number"
-                placeholder="Capacidad máxima">
-
-            <select id="sectorEstadio">
-                ${opcionesEstadios}
-            </select>
-
-            <button id="btnGuardarSector">
-                Guardar sector
-            </button>
-
-            <button id="btnVolverAdmin" class="secundario">
-                Volver
-            </button>
-
+                    <div class="adm-form">
+                        <div class="adm-field">
+                            <label class="adm-label">Estadio</label>
+                            <select id="sectorEstadio" class="adm-select">${opcionesEstadios}</select>
+                        </div>
+                        <div class="adm-field">
+                            <label class="adm-label">Nombre del sector</label>
+                            <input id="sectorNombre" class="adm-input" type="text" placeholder="Ej. Tribuna Norte">
+                        </div>
+                        <div class="adm-field">
+                            <label class="adm-label">Capacidad máxima</label>
+                            <input id="sectorCapacidad" class="adm-input" type="number" placeholder="Ej. 5000">
+                        </div>
+                        <div class="adm-form-actions">
+                            <button id="btnGuardarSector" class="adm-btn-primary">Guardar sector →</button>
+                            <button id="btnVolverAdmin" class="adm-btn-volver">← Volver</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     `;
 
-    document.getElementById("btnGuardarSector")
-        .addEventListener("click", guardarSector);
-
-    document.getElementById("btnVolverAdmin")
-        .addEventListener("click", mostrarAdministrador);
+    document.getElementById("btnGuardarSector").addEventListener("click", guardarSector);
+    document.getElementById("btnVolverAdmin").addEventListener("click", mostrarAdministrador);
 }
 
+/* =============================================
+   FORMULARIO: EVENTO
+   ============================================= */
 function mostrarFormularioEvento(estadios, equipos) {
 
-    let opcionesEstadios = "";
-    let opcionesEquipos = "";
+    const opcionesEstadios = estadios.map(e =>
+        `<option value="${e.id_estadio}">${e.nombre}</option>`
+    ).join("");
 
-    for (const estadio of estadios) {
-        opcionesEstadios += `
-            <option value="${estadio.id_estadio}">
-                ${estadio.nombre}
-            </option>
-        `;
-    }
-
-    for (const equipo of equipos) {
-        opcionesEquipos += `
-            <option value="${equipo.id_equipo}">
-                ${equipo.nombre}
-            </option>
-        `;
-    }
+    const opcionesEquipos = equipos.map(e =>
+        `<option value="${e.id_equipo}">${e.nombre}</option>`
+    ).join("");
 
     document.getElementById("app").innerHTML = `
-        <div class="login-container">
+        <div class="adm-wrapper">
+            ${renderNav("Administrador")}
+            <div class="adm-content">
+                <div class="adm-card">
+                    <p class="adm-page-label">Eventos</p>
+                    <h1 class="adm-page-title">Crear partido</h1>
 
-            <h1>Crear evento</h1>
-
-            <input
-                id="eventoFecha"
-                type="date">
-
-            <input
-                id="eventoHora"
-                type="time">
-
-            <select id="eventoEstadio">
-                ${opcionesEstadios}
-            </select>
-
-            <select id="eventoLocal">
-                ${opcionesEquipos}
-            </select>
-
-            <select id="eventoVisitante">
-                ${opcionesEquipos}
-            </select>
-
-            <button id="btnGuardarEvento">
-                Guardar evento
-            </button>
-
-            <button id="btnVolverAdmin" class="secundario">
-                Volver
-            </button>
-
+                    <div class="adm-form">
+                        <div class="adm-form-grid2">
+                            <div class="adm-field">
+                                <label class="adm-label">Fecha</label>
+                                <input id="eventoFecha" class="adm-input" type="date">
+                            </div>
+                            <div class="adm-field">
+                                <label class="adm-label">Hora</label>
+                                <input id="eventoHora" class="adm-input" type="time">
+                            </div>
+                        </div>
+                        <div class="adm-field">
+                            <label class="adm-label">Estadio</label>
+                            <select id="eventoEstadio" class="adm-select">${opcionesEstadios}</select>
+                        </div>
+                        <div class="adm-field">
+                            <label class="adm-label">Equipo local</label>
+                            <select id="eventoLocal" class="adm-select">${opcionesEquipos}</select>
+                        </div>
+                        <div class="adm-field">
+                            <label class="adm-label">Equipo visitante</label>
+                            <select id="eventoVisitante" class="adm-select">${opcionesEquipos}</select>
+                        </div>
+                        <div class="adm-form-actions">
+                            <button id="btnGuardarEvento" class="adm-btn-primary">Crear evento →</button>
+                            <button id="btnVolverAdmin" class="adm-btn-volver">← Volver</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     `;
 
-    document.getElementById("btnGuardarEvento")
-        .addEventListener("click", guardarEvento);
-
-    document.getElementById("btnVolverAdmin")
-        .addEventListener("click", mostrarAdministrador);
+    document.getElementById("btnGuardarEvento").addEventListener("click", guardarEvento);
+    document.getElementById("btnVolverAdmin").addEventListener("click", mostrarAdministrador);
 }
 
+/* =============================================
+   FORMULARIO: EQUIPO
+   ============================================= */
 function mostrarFormularioEquipo() {
 
     document.getElementById("app").innerHTML = `
-        <div class="login-container">
+        <div class="adm-wrapper">
+            ${renderNav("Administrador")}
+            <div class="adm-content">
+                <div class="adm-card">
+                    <p class="adm-page-label">Equipos</p>
+                    <h1 class="adm-page-title">Agregar selección</h1>
 
-            <h1>Agregar equipo</h1>
-
-            <input
-                id="equipoNombre"
-                type="text"
-                placeholder="Nombre del equipo">
-
-            <button id="btnGuardarEquipo">
-                Guardar equipo
-            </button>
-
-            <button id="btnVolverAdmin" class="secundario">
-                Volver
-            </button>
-
+                    <div class="adm-form">
+                        <div class="adm-field">
+                            <label class="adm-label">Nombre del equipo</label>
+                            <input id="equipoNombre" class="adm-input" type="text" placeholder="Ej. Argentina">
+                        </div>
+                        <div class="adm-form-actions">
+                            <button id="btnGuardarEquipo" class="adm-btn-primary">Guardar equipo →</button>
+                            <button id="btnVolverAdmin" class="adm-btn-volver">← Volver</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     `;
 
-    document.getElementById("btnGuardarEquipo")
-        .addEventListener("click", guardarEquipo);
-
-    document.getElementById("btnVolverAdmin")
-        .addEventListener("click", mostrarAdministrador);
+    document.getElementById("btnGuardarEquipo").addEventListener("click", guardarEquipo);
+    document.getElementById("btnVolverAdmin").addEventListener("click", mostrarAdministrador);
 }
 
+/* =============================================
+   FORMULARIO: HABILITAR SECTOR PARA EVENTO
+   ============================================= */
 function mostrarFormularioHabilitarSector(eventos, sectores) {
 
-    let opcionesEventos = "";
-    let opcionesSectores = "";
-
-    for (const evento of eventos) {
-        opcionesEventos += `
-            <option value="${evento.id_evento}">
-                ${evento.fecha} ${evento.hora} - ${evento.equipo_local} vs ${evento.equipo_visitante} - ${evento.estadio}
-            </option>
-        `;
-    }
-
-    for (const sector of sectores) {
-        opcionesSectores += `
-            <option value="${sector.id_sector}">
-                ${sector.estadio} - Sector ${sector.nombre} - Cap. máx: ${sector.cap_max}
-            </option>
-        `;
-    }
+    const opcionesEventos = eventos.map(e =>
+        `<option value="${e.id_evento}">${e.fecha} ${e.hora} — ${e.equipo_local} vs ${e.equipo_visitante} · ${e.estadio}</option>`
+    ).join("");
 
     document.getElementById("app").innerHTML = `
-        <div class="login-container">
+        <div class="adm-wrapper">
+            ${renderNav("Administrador")}
+            <div class="adm-content">
+                <div class="adm-card">
+                    <p class="adm-page-label">Sectores</p>
+                    <h1 class="adm-page-title">Habilitar sector</h1>
 
-            <h1>Habilitar sector para evento</h1>
-
-            <select id="habilitarEvento">
-                ${opcionesEventos}
-            </select>
-
-            <select id="habilitarSector">
-                ${opcionesSectores}
-            </select>
-
-            <input
-                id="habilitarPrecio"
-                type="number"
-                min="0"
-                step="0.01"
-                placeholder="Precio">
-
-            <input
-                id="habilitarCapacidad"
-                type="number"
-                min="1"
-                placeholder="Capacidad habilitada">
-
-            <button id="btnGuardarSectorEvento">
-                Habilitar sector
-            </button>
-
-            <button id="btnVolverAdmin" class="secundario">
-                Volver
-            </button>
-
+                    <div class="adm-form">
+                        <div class="adm-field">
+                            <label class="adm-label">Partido</label>
+                            <select id="habilitarEvento" class="adm-select">${opcionesEventos}</select>
+                        </div>
+                        <div class="adm-field">
+                            <label class="adm-label">Sector</label>
+                            <select id="habilitarSector" class="adm-select"></select>
+                        </div>
+                        <div class="adm-form-grid2">
+                            <div class="adm-field">
+                                <label class="adm-label">Precio (USD)</label>
+                                <input id="habilitarPrecio" class="adm-input" type="number" min="0" step="0.01" placeholder="0.00">
+                            </div>
+                            <div class="adm-field">
+                                <label class="adm-label">Capacidad</label>
+                                <input id="habilitarCapacidad" class="adm-input" type="number" min="1" placeholder="Ej. 1000">
+                            </div>
+                        </div>
+                        <div class="adm-form-actions">
+                            <button id="btnGuardarSectorEvento" class="adm-btn-primary">Habilitar sector →</button>
+                            <button id="btnVolverAdmin" class="adm-btn-volver">← Volver</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     `;
 
     function actualizarSectoresPorEvento() {
-
-        const idEventoSeleccionado = Number(document.getElementById("habilitarEvento").value);
-        const eventoSeleccionado = eventos.find(e => Number(e.id_evento) === idEventoSeleccionado);
-
-        let opcionesSectoresFiltrados = "";
-
-        for (const sector of sectores) {
-
-            if (sector.estadio === eventoSeleccionado.estadio) {
-                opcionesSectoresFiltrados += `
-                    <option value="${sector.id_sector}">
-                        ${sector.estadio} - Sector ${sector.nombre} - Cap. máx: ${sector.cap_max}
-                    </option>
-                `;
-            }
-        }
-
-        document.getElementById("habilitarSector").innerHTML = opcionesSectoresFiltrados;
+        const idSel = Number(document.getElementById("habilitarEvento").value);
+        const eventoSel = eventos.find(e => Number(e.id_evento) === idSel);
+        const filtrados = sectores.filter(s => s.estadio === eventoSel.estadio);
+        document.getElementById("habilitarSector").innerHTML = filtrados.map(s =>
+            `<option value="${s.id_sector}">${s.estadio} — Sector ${s.nombre} · Cap. ${s.cap_max}</option>`
+        ).join("");
     }
 
-    document.getElementById("habilitarEvento")
-        .addEventListener("change", actualizarSectoresPorEvento);
-
+    document.getElementById("habilitarEvento").addEventListener("change", actualizarSectoresPorEvento);
     actualizarSectoresPorEvento();
-
-    document.getElementById("btnGuardarSectorEvento")
-        .addEventListener("click", guardarSectorEvento);
-
-    document.getElementById("btnVolverAdmin")
-        .addEventListener("click", mostrarAdministrador);
+    document.getElementById("btnGuardarSectorEvento").addEventListener("click", guardarSectorEvento);
+    document.getElementById("btnVolverAdmin").addEventListener("click", mostrarAdministrador);
 }
 
+/* =============================================
+   FORMULARIO: ASIGNAR FUNCIONARIO
+   ============================================= */
 function mostrarFormularioAsignarFuncionario(funcionarios, eventoSectores) {
 
-    let opcionesFuncionarios = "";
-    let opcionesEventoSectores = "";
+    const opcionesFuncionarios = funcionarios.map(f =>
+        `<option value="${f.id_usuario}">${f.mail} — Legajo ${f.num_legajo}</option>`
+    ).join("");
 
-    for (const funcionario of funcionarios) {
-        opcionesFuncionarios += `
-            <option value="${funcionario.id_usuario}">
-                ${funcionario.mail} - Legajo: ${funcionario.num_legajo}
-            </option>
-        `;
+    const opcionesEventoSectores = eventoSectores.map(es =>
+        `<option value="${es.id_evento_sector}">${es.fecha} ${es.hora} — ${es.equipo_local} vs ${es.equipo_visitante} · ${es.estadio} · Sector ${es.sector}</option>`
+    ).join("");
+
+    document.getElementById("app").innerHTML = `
+        <div class="adm-wrapper">
+            ${renderNav("Administrador")}
+            <div class="adm-content">
+                <div class="adm-card">
+                    <p class="adm-page-label">Personal</p>
+                    <h1 class="adm-page-title">Asignar funcionario</h1>
+
+                    <div class="adm-form">
+                        <div class="adm-field">
+                            <label class="adm-label">Funcionario</label>
+                            <select id="asignarFuncionario" class="adm-select">${opcionesFuncionarios}</select>
+                        </div>
+                        <div class="adm-field">
+                            <label class="adm-label">Partido y sector</label>
+                            <select id="asignarEventoSector" class="adm-select">${opcionesEventoSectores}</select>
+                        </div>
+                        <div class="adm-form-actions">
+                            <button id="btnGuardarAsignacionFuncionario" class="adm-btn-primary">Guardar asignación →</button>
+                            <button id="btnVolverAdmin" class="adm-btn-volver">← Volver</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.getElementById("btnGuardarAsignacionFuncionario").addEventListener("click", guardarAsignacionFuncionarioEventoSector);
+    document.getElementById("btnVolverAdmin").addEventListener("click", mostrarAdministrador);
+}
+
+/* =============================================
+   ESTADÍSTICAS
+   ============================================= */
+function mostrarEstadisticas(eventos, compradores) {
+
+    let htmlEventos = "";
+
+    if (eventos.length === 0) {
+        htmlEventos = `<div class="adm-empty">Sin ventas registradas aún.</div>`;
+    } else {
+        htmlEventos = eventos.map(ev => `
+            <div class="adm-stat-card">
+                <div class="adm-stat-card-title">${ev.equipo_local} vs ${ev.equipo_visitante}</div>
+                <div class="adm-stat-row">
+                    <span class="adm-stat-key">📅 Fecha</span>
+                    <span class="adm-stat-val">${ev.fecha} · ${ev.hora}</span>
+                </div>
+                <div class="adm-stat-row">
+                    <span class="adm-stat-key">🏟️ Estadio</span>
+                    <span class="adm-stat-val">${ev.estadio}</span>
+                </div>
+                <div class="adm-stat-row">
+                    <span class="adm-stat-key">🎟️ Entradas vendidas</span>
+                    <span class="adm-stat-highlight">${ev.total_entradas_vendidas}</span>
+                </div>
+            </div>
+        `).join("");
     }
 
-    for (const es of eventoSectores) {
-        opcionesEventoSectores += `
-            <option value="${es.id_evento_sector}">
-                ${es.fecha} ${es.hora} - ${es.equipo_local} vs ${es.equipo_visitante} - ${es.estadio} - Sector ${es.sector}
-            </option>
-        `;
+    let htmlCompradores = "";
+
+    if (compradores.length === 0) {
+        htmlCompradores = `<div class="adm-empty">Sin compradores registrados aún.</div>`;
+    } else {
+        htmlCompradores = compradores.map(c => `
+            <div class="adm-stat-card">
+                <div class="adm-stat-card-title">${c.mail}</div>
+                <div class="adm-stat-row">
+                    <span class="adm-stat-key">🛒 Compras</span>
+                    <span class="adm-stat-val">${c.total_compras}</span>
+                </div>
+                <div class="adm-stat-row">
+                    <span class="adm-stat-key">🎟️ Entradas</span>
+                    <span class="adm-stat-val">${c.total_entradas}</span>
+                </div>
+                <div class="adm-stat-row">
+                    <span class="adm-stat-key">💰 Total gastado</span>
+                    <span class="adm-stat-highlight">USD ${c.total_gastado}</span>
+                </div>
+            </div>
+        `).join("");
     }
 
     document.getElementById("app").innerHTML = `
-        <div class="login-container">
+        <div class="adm-wrapper">
+            ${renderNav("Administrador")}
+            <div class="adm-content">
+                <div class="adm-card adm-card-wide">
+                    <p class="adm-page-label">Resumen</p>
+                    <h1 class="adm-page-title">Estadísticas</h1>
 
-            <h1>Asignar funcionario</h1>
+                    <div class="adm-stats-section">
+                        <div class="adm-stats-section-title">🏆 Eventos con más entradas vendidas</div>
+                        ${htmlEventos}
+                    </div>
 
-            <select id="asignarFuncionario">
-                ${opcionesFuncionarios}
-            </select>
+                    <hr class="adm-divider">
 
-            <select id="asignarEventoSector">
-                ${opcionesEventoSectores}
-            </select>
+                    <div class="adm-stats-section">
+                        <div class="adm-stats-section-title">👑 Ranking de mayores compradores</div>
+                        ${htmlCompradores}
+                    </div>
 
-            <button id="btnGuardarAsignacionFuncionario">
-                Guardar asignación
-            </button>
-
-            <button id="btnVolverAdmin" class="secundario">
-                Volver
-            </button>
-
+                    <button id="btnVolverAdmin" class="adm-btn-volver">← Volver al panel</button>
+                </div>
+            </div>
         </div>
     `;
 
-    document.getElementById("btnGuardarAsignacionFuncionario")
-        .addEventListener("click", guardarAsignacionFuncionarioEventoSector);
-
-    document.getElementById("btnVolverAdmin")
-        .addEventListener("click", mostrarAdministrador);
-}
-
-function mostrarEstadisticas(eventos, compradores) {
-
-    let html = `
-        <div class="login-container">
-
-            <h1>Estadísticas</h1>
-
-            <h2>Eventos con más entradas vendidas</h2>
-    `;
-
-    if (eventos.length === 0) {
-
-        html += `
-            <p>No hay ventas registradas.</p>
-        `;
-
-    } else {
-
-        for (const evento of eventos) {
-
-            html += `
-                <div class="card">
-                    <h3>${evento.equipo_local} vs ${evento.equipo_visitante}</h3>
-                    <p><strong>Fecha:</strong> ${evento.fecha}</p>
-                    <p><strong>Hora:</strong> ${evento.hora}</p>
-                    <p><strong>Estadio:</strong> ${evento.estadio}</p>
-                    <p><strong>Entradas vendidas:</strong> ${evento.total_entradas_vendidas}</p>
-                </div>
-                <br>
-            `;
-        }
-    }
-
-    html += `
-            <hr style="margin:25px 0">
-
-            <h2>Ranking de mayores compradores</h2>
-    `;
-
-    if (compradores.length === 0) {
-
-        html += `
-            <p>No hay compradores registrados.</p>
-        `;
-
-    } else {
-
-        for (const comprador of compradores) {
-
-            html += `
-                <div class="card">
-                    <h3>${comprador.mail}</h3>
-                    <p><strong>Total compras:</strong> ${comprador.total_compras}</p>
-                    <p><strong>Total entradas:</strong> ${comprador.total_entradas}</p>
-                    <p><strong>Total gastado:</strong> USD ${comprador.total_gastado}</p>
-                </div>
-                <br>
-            `;
-        }
-    }
-
-    html += `
-            <button id="btnVolverAdmin" class="secundario">
-                Volver
-            </button>
-
-        </div>
-    `;
-
-    document.getElementById("app").innerHTML = html;
-
-    document.getElementById("btnVolverAdmin")
-        .addEventListener("click", mostrarAdministrador);
+    document.getElementById("btnVolverAdmin").addEventListener("click", mostrarAdministrador);
 }

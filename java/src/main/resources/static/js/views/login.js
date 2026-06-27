@@ -34,7 +34,6 @@ function mostrarLogin() {
 
                 <button class="secundario" id="btnRegistrarme">Registrarme</button>
 
-                <p class="registro">¿Problemas para ingresar? Contactá al soporte</p>
             </div>
 
         </div>

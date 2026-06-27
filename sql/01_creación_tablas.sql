@@ -124,7 +124,6 @@ CREATE TABLE adm_pais_sede (
 CREATE TABLE equipo (
     id_equipo BIGINT NOT NULL AUTO_INCREMENT,
     nombre    VARCHAR(100) NOT NULL,
-    pais      VARCHAR(60),
 
     PRIMARY KEY (id_equipo),
     UNIQUE KEY uq_equipo_nombre (nombre)

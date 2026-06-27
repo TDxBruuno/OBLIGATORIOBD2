@@ -40,7 +40,11 @@ function mostrarRegistro() {
                 <div class="section-label">Documento</div>
                 <div class="reg-grid3">
                     <input id="regDocPais" type="text" placeholder="País">
-                    <input id="regDocTipo" type="text" placeholder="Tipo">
+                    <select id="regDocTipo">
+                <option value="" selected disabled>Tipo de documento</option>
+                <option value="CI">Cédula de identidad</option>
+                <option value="PASAPORTE">Pasaporte</option>
+                </select>
                     <input id="regDocNumero" type="text" placeholder="Número">
                 </div>
 

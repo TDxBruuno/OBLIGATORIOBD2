@@ -41,7 +41,8 @@ async function manejarRegistro(datos) {
 
             await registrarAdministrador({
                 base: base,
-                fechaAsignacion: datos.fechaAsignacion
+                fechaAsignacion: datos.fechaAsignacion,
+                paisSede: datos.paisSede
             });
 
         }

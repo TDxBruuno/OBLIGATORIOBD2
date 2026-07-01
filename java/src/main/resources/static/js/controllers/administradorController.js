@@ -6,10 +6,13 @@ async function crearEstadio() {
         return;
     }
 
+    const usuario = obtenerUsuarioActual();
+
     try {
 
         await registrarEstadio({
-            nombre: nombre.trim()
+            nombre: nombre.trim(),
+            idAdmPaisSede: usuario.id_usuario
         });
 
         alert("Estadio agregado correctamente.");
@@ -26,7 +29,8 @@ async function crearSector() {
 
     try {
 
-        const estadios = await obtenerEstadios();
+        const usuario = obtenerUsuarioActual();
+        const estadios = await obtenerEstadios(usuario.id_usuario);
 
         mostrarFormularioSector(estadios);
 
@@ -103,7 +107,8 @@ async function crearEvento() {
 
     try {
 
-        const estadios = await obtenerEstadios();
+        const usuario = obtenerUsuarioActual();
+        const estadios = await obtenerEstadios(usuario.id_usuario);
         const equipos = await obtenerEquipos();
 
         mostrarFormularioEvento(estadios, equipos);
@@ -162,8 +167,9 @@ async function habilitarSectorEvento() {
 
     try {
 
-        const eventos = await obtenerEventos();
-        const sectores = await obtenerSectores();
+        const usuario = obtenerUsuarioActual();
+        const eventos = await obtenerEventos(usuario.id_usuario);
+        const sectores = await obtenerSectores(usuario.id_usuario);
 
         mostrarFormularioHabilitarSector(eventos, sectores);
 
@@ -212,7 +218,8 @@ async function asignarFuncionarioEventoSector() {
     try {
 
         const funcionarios = await obtenerFuncionarios();
-        const eventoSectores = await obtenerEventoSectoresHabilitados();
+        const usuario = obtenerUsuarioActual();
+        const eventoSectores = await obtenerEventoSectoresHabilitados(usuario.id_usuario);
 
         if (funcionarios.length === 0) {
             alert("No hay funcionarios registrados.");

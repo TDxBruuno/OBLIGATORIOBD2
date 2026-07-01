@@ -104,6 +104,7 @@ function mostrarRegistro() {
 
         if (datos.tipoUsuario === "ADMIN") {
             datos.fechaAsignacion = document.getElementById("regFechaAsignacion").value;
+            datos.paisSede = document.getElementById("regPaisSede").value;
         }
 
         manejarRegistro(datos);
@@ -121,8 +122,15 @@ function actualizarCamposExtraRegistro() {
         `;
     } else if (tipo === "ADMIN") {
         contenedor.innerHTML = `
-            <input id="regFechaAsignacion" type="date">
-        `;
+        <input id="regFechaAsignacion" type="date">
+
+        <select id="regPaisSede">
+            <option value="" selected disabled>País sede asignado</option>
+            <option value="MEXICO">México</option>
+            <option value="USA">Estados Unidos</option>
+            <option value="CANADA">Canadá</option>
+        </select>
+    `;
     } else {
         contenedor.innerHTML = "";
     }

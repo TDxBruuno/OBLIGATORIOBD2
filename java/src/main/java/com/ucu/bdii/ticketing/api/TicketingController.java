@@ -53,7 +53,8 @@ public class TicketingController {
     public IdResponse registrarAdmin(@Valid @RequestBody AdminRequest req) {
         long id = service.registrarAdministrador(new TicketingService.AdminPaisSedeData(
                 req.base().toDomain(TipoUsuario.ADMIN),
-                req.fechaAsignacion()));
+                req.fechaAsignacion(),
+                req.paisSede()));
         return new IdResponse(id);
     }
 
@@ -89,29 +90,27 @@ public class TicketingController {
     @PostMapping("/estadios")
     @ResponseStatus(HttpStatus.CREATED)
     public IdResponse crearEstadio(@Valid @RequestBody EstadioRequest req) {
-        return new IdResponse(service.registrarEstadio(req.nombre()));
+        return new IdResponse(service.registrarEstadio(req.nombre(), req.idAdmPaisSede()));
     }
 
     @GetMapping("/estadios")
-    public List<Map<String, Object>> listarEstadios() {
-        return service.listarEstadios();
+    public List<Map<String, Object>> listarEstadios(@RequestParam(required = false) Long idAdmin) {
+        return service.listarEstadios(idAdmin);
     }
-
     @GetMapping("/equipos")
     public List<Map<String, Object>> listarEquipos() {
         return service.listarEquipos();
     }
 
     @GetMapping("/eventos")
-    public List<Map<String, Object>> listarEventos() {
-        return service.listarEventos();
+    public List<Map<String, Object>> listarEventos(@RequestParam(required = false) Long idAdmin) {
+        return service.listarEventos(idAdmin);
     }
 
     @GetMapping("/sectores")
-    public List<Map<String, Object>> listarSectores() {
-        return service.listarSectores();
+    public List<Map<String, Object>> listarSectores(@RequestParam(required = false) Long idAdmin) {
+        return service.listarSectores(idAdmin);
     }
-
     @PostMapping("/equipos")
     @ResponseStatus(HttpStatus.CREATED)
     public IdResponse crearEquipo(@Valid @RequestBody EquipoRequest req) {
@@ -156,8 +155,8 @@ public class TicketingController {
     }
 
     @GetMapping("/eventos/sectores-habilitados")
-    public List<Map<String, Object>> listarEventoSectoresHabilitados() {
-        return service.listarEventoSectoresHabilitados();
+    public List<Map<String, Object>> listarEventoSectoresHabilitados(@RequestParam(required = false) Long idAdmin) {
+        return service.listarEventoSectoresHabilitados(idAdmin);
     }
 
     @PostMapping("/funcionarios/asignaciones-evento-sector")
@@ -311,9 +310,12 @@ public class TicketingController {
 
     public record AdminRequest(
             @Valid BaseUsuarioRequest base,
-            @NotNull LocalDate fechaAsignacion) {}
+            @NotNull LocalDate fechaAsignacion,
+            @NotBlank String paisSede) {}
 
-    public record EstadioRequest(@NotBlank String nombre) {}
+    public record EstadioRequest(
+            @NotBlank String nombre,
+            @Positive long idAdmPaisSede) {}
 
     public record EquipoRequest(@NotBlank String nombre) {}
 

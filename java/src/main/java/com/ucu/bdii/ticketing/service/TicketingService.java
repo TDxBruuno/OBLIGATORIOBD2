@@ -53,7 +53,7 @@ public class TicketingService {
 
     public record FuncionarioData(BaseUsuario base, String legajo) {}
 
-    public record AdminPaisSedeData(BaseUsuario base, LocalDate fechaAsignacion) {}
+    public record AdminPaisSedeData(BaseUsuario base, LocalDate fechaAsignacion, String paisSede) {}
 
     public record CompraLinea(long idEventoSector, int cantidad) {}
 
@@ -105,9 +105,10 @@ public class TicketingService {
         assertTipo(request.base().tipoUsuario(), "ADMIN");
         long idUsuario = insertarUsuarioBase(request.base());
 
-        jdbc.update("INSERT INTO adm_pais_sede (id_usuario, fecha_asignacion) VALUES (?, ?)",
+        jdbc.update("INSERT INTO adm_pais_sede (id_usuario, fecha_asignacion, pais_sede) VALUES (?, ?, ?)",
                 idUsuario,
-                Date.valueOf(request.fechaAsignacion()));
+                Date.valueOf(request.fechaAsignacion()),
+                request.paisSede());
 
         return idUsuario;
     }
@@ -134,32 +135,46 @@ public class TicketingService {
     // =========================================================================
 
     @Transactional
-    public long registrarEstadio(String nombre) {
+    public long registrarEstadio(String nombre, long idAdmin) {
+        String paisSede = obtenerPaisSedeDelAdmin(idAdmin);
+
         KeyHolder kh = new GeneratedKeyHolder();
         jdbc.update(conn -> {
             PreparedStatement ps = conn.prepareStatement(
-                    "INSERT INTO estadio (nombre) VALUES (?)", Statement.RETURN_GENERATED_KEYS);
+                    "INSERT INTO estadio (nombre, pais_sede) VALUES (?, ?)",
+                    Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, nombre);
+            ps.setString(2, paisSede);
             return ps;
         }, kh);
+
         return Objects.requireNonNull(kh.getKey()).longValue();
     }
 
-    public List<Map<String, Object>> listarEstadios() {
+    public List<Map<String, Object>> listarEstadios(Long idAdmin) {
 
-        return jdbc.query("""
-            SELECT
-                id_estadio,
-                nombre
-            FROM estadio
-            ORDER BY nombre
-            """,
+        String sql = """
+        SELECT id_estadio, nombre, pais_sede
+        FROM estadio
+        """;
+
+        if (idAdmin != null) {
+            String paisSede = obtenerPaisSedeDelAdmin(idAdmin);
+            return jdbc.query(sql + " WHERE pais_sede = ? ORDER BY nombre",
+                    (rs, rowNum) -> Map.of(
+                            "id_estadio", rs.getLong("id_estadio"),
+                            "nombre", rs.getString("nombre"),
+                            "pais_sede", rs.getString("pais_sede")
+                    ),
+                    paisSede);
+        }
+
+        return jdbc.query(sql + " ORDER BY nombre",
                 (rs, rowNum) -> Map.of(
                         "id_estadio", rs.getLong("id_estadio"),
-                        "nombre", rs.getString("nombre")
-                )
-        );
-
+                        "nombre", rs.getString("nombre"),
+                        "pais_sede", rs.getString("pais_sede")
+                ));
     }
 
     public List<Map<String, Object>> listarEquipos() {
@@ -179,52 +194,84 @@ public class TicketingService {
 
     }
 
-    public List<Map<String, Object>> listarEventos() {
+    public List<Map<String, Object>> listarEventos(Long idAdmin) {
 
-        return jdbc.query("""
-            SELECT
-                ev.id_evento,
-                ev.fecha,
-                ev.hora,
-                el.nombre AS equipo_local,
-                evis.nombre AS equipo_visitante,
-                est.nombre AS estadio
-            FROM evento ev
-            JOIN equipo el ON el.id_equipo = ev.equipo_local_id
-            JOIN equipo evis ON evis.id_equipo = ev.equipo_visitante_id
-            JOIN estadio est ON est.id_estadio = ev.id_estadio
-            ORDER BY ev.fecha, ev.hora
-            """,
+        String sql = """
+        SELECT
+            ev.id_evento,
+            ev.fecha,
+            ev.hora,
+            el.nombre AS equipo_local,
+            evis.nombre AS equipo_visitante,
+            est.nombre AS estadio,
+            est.pais_sede
+        FROM evento ev
+        JOIN equipo el ON el.id_equipo = ev.equipo_local_id
+        JOIN equipo evis ON evis.id_equipo = ev.equipo_visitante_id
+        JOIN estadio est ON est.id_estadio = ev.id_estadio
+        """;
+
+        if (idAdmin != null) {
+            String paisSede = obtenerPaisSedeDelAdmin(idAdmin);
+            return jdbc.query(sql + " WHERE est.pais_sede = ? ORDER BY ev.fecha, ev.hora",
+                    (rs, rowNum) -> Map.of(
+                            "id_evento", rs.getLong("id_evento"),
+                            "fecha", rs.getDate("fecha").toString(),
+                            "hora", rs.getTime("hora").toString(),
+                            "equipo_local", rs.getString("equipo_local"),
+                            "equipo_visitante", rs.getString("equipo_visitante"),
+                            "estadio", rs.getString("estadio"),
+                            "pais_sede", rs.getString("pais_sede")
+                    ),
+                    paisSede);
+        }
+
+        return jdbc.query(sql + " ORDER BY ev.fecha, ev.hora",
                 (rs, rowNum) -> Map.of(
                         "id_evento", rs.getLong("id_evento"),
                         "fecha", rs.getDate("fecha").toString(),
                         "hora", rs.getTime("hora").toString(),
                         "equipo_local", rs.getString("equipo_local"),
                         "equipo_visitante", rs.getString("equipo_visitante"),
-                        "estadio", rs.getString("estadio")
-                )
-        );
+                        "estadio", rs.getString("estadio"),
+                        "pais_sede", rs.getString("pais_sede")
+                ));
     }
 
-    public List<Map<String, Object>> listarSectores() {
+    public List<Map<String, Object>> listarSectores(Long idAdmin) {
 
-        return jdbc.query("""
-            SELECT
-                s.id_sector,
-                s.nombre,
-                s.cap_max,
-                e.nombre AS estadio
-            FROM sector s
-            JOIN estadio e ON e.id_estadio = s.id_estadio
-            ORDER BY e.nombre, s.nombre
-            """,
+        String sql = """
+        SELECT
+            s.id_sector,
+            s.nombre,
+            s.cap_max,
+            e.nombre AS estadio,
+            e.pais_sede
+        FROM sector s
+        JOIN estadio e ON e.id_estadio = s.id_estadio
+        """;
+
+        if (idAdmin != null) {
+            String paisSede = obtenerPaisSedeDelAdmin(idAdmin);
+            return jdbc.query(sql + " WHERE e.pais_sede = ? ORDER BY e.nombre, s.nombre",
+                    (rs, rowNum) -> Map.of(
+                            "id_sector", rs.getLong("id_sector"),
+                            "nombre", rs.getString("nombre"),
+                            "cap_max", rs.getInt("cap_max"),
+                            "estadio", rs.getString("estadio"),
+                            "pais_sede", rs.getString("pais_sede")
+                    ),
+                    paisSede);
+        }
+
+        return jdbc.query(sql + " ORDER BY e.nombre, s.nombre",
                 (rs, rowNum) -> Map.of(
                         "id_sector", rs.getLong("id_sector"),
                         "nombre", rs.getString("nombre"),
                         "cap_max", rs.getInt("cap_max"),
-                        "estadio", rs.getString("estadio")
-                )
-        );
+                        "estadio", rs.getString("estadio"),
+                        "pais_sede", rs.getString("pais_sede")
+                ));
     }
 
     @Transactional
@@ -273,6 +320,20 @@ public class TicketingService {
                 .stream().findFirst()
                 .orElseThrow(() -> new ResourceNotFoundException("El administrador no existe"));
         assertTipo(tipoAdmin, "ADMIN");
+
+        String paisAdmin = obtenerPaisSedeDelAdmin(request.idAdmPaisSede());
+
+        String paisEstadio = jdbc.queryForList(
+                        "SELECT pais_sede FROM estadio WHERE id_estadio = ?",
+                        String.class,
+                        request.idEstadio())
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException("El estadio no existe"));
+
+        if (!paisAdmin.equals(paisEstadio)) {
+            throw new BusinessRuleException("El administrador solo puede crear eventos en estadios de su país sede");
+        }
 
         // Verificar que local != visitante
         if (request.equipoLocalId() == request.equipoVisitanteId()) {
@@ -419,19 +480,35 @@ public class TicketingService {
         );
     }
 
-    public List<Map<String, Object>> listarEventoSectoresHabilitados() {
-        return jdbc.queryForList(
-                "SELECT es.id_evento_sector, ev.id_evento, ev.fecha, ev.hora, " +
-                        "eq_l.nombre AS equipo_local, eq_v.nombre AS equipo_visitante, " +
-                        "est.nombre AS estadio, s.nombre AS sector, es.precio, es.capacidad " +
-                        "FROM evento_sector es " +
-                        "JOIN evento ev ON ev.id_evento = es.id_evento " +
-                        "JOIN equipo eq_l ON eq_l.id_equipo = ev.equipo_local_id " +
-                        "JOIN equipo eq_v ON eq_v.id_equipo = ev.equipo_visitante_id " +
-                        "JOIN estadio est ON est.id_estadio = ev.id_estadio " +
-                        "JOIN sector s ON s.id_sector = es.id_sector " +
-                        "ORDER BY ev.fecha, ev.hora, est.nombre, s.nombre"
-        );
+    public List<Map<String, Object>> listarEventoSectoresHabilitados(Long idAdmin) {
+
+        String sql = """
+        SELECT
+            es.id_evento_sector,
+            ev.id_evento,
+            ev.fecha,
+            ev.hora,
+            eq_l.nombre AS equipo_local,
+            eq_v.nombre AS equipo_visitante,
+            est.nombre AS estadio,
+            est.pais_sede,
+            s.nombre AS sector,
+            es.precio,
+            es.capacidad
+        FROM evento_sector es
+        JOIN evento ev ON ev.id_evento = es.id_evento
+        JOIN equipo eq_l ON eq_l.id_equipo = ev.equipo_local_id
+        JOIN equipo eq_v ON eq_v.id_equipo = ev.equipo_visitante_id
+        JOIN estadio est ON est.id_estadio = ev.id_estadio
+        JOIN sector s ON s.id_sector = es.id_sector
+        """;
+
+        if (idAdmin != null) {
+            String paisSede = obtenerPaisSedeDelAdmin(idAdmin);
+            return jdbc.queryForList(sql + " WHERE est.pais_sede = ? ORDER BY ev.fecha, ev.hora, est.nombre, s.nombre", paisSede);
+        }
+
+        return jdbc.queryForList(sql + " ORDER BY ev.fecha, ev.hora, est.nombre, s.nombre");
     }
 
     @Transactional
@@ -975,5 +1052,15 @@ public class TicketingService {
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalStateException("SHA-256 no disponible", e);
         }
+    }
+
+    private String obtenerPaisSedeDelAdmin(long idAdmin) {
+        return jdbc.queryForList(
+                        "SELECT pais_sede FROM adm_pais_sede WHERE id_usuario = ?",
+                        String.class,
+                        idAdmin)
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException("El administrador no tiene país sede asignado"));
     }
 }

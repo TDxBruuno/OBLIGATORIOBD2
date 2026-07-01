@@ -181,9 +181,13 @@ async function registrarEstadio(datos) {
     return await response.json();
 }
 
-async function obtenerEstadios() {
+async function obtenerEstadios(idAdmin = null) {
 
-    const response = await fetch("/api/estadios");
+    const url = idAdmin
+        ? `/api/estadios?idAdmin=${idAdmin}`
+        : "/api/estadios";
+
+    const response = await fetch(url);
 
     if (response.ok) {
         return await response.json();
@@ -259,9 +263,13 @@ async function registrarEquipo(datos) {
     throw new Error(error.error || "Error al agregar equipo");
 }
 
-async function obtenerEventos() {
+async function obtenerEventos(idAdmin = null) {
 
-    const response = await fetch("/api/eventos");
+    const url = idAdmin
+        ? `/api/eventos?idAdmin=${idAdmin}`
+        : "/api/eventos";
+
+    const response = await fetch(url);
 
     if (response.ok) {
         return await response.json();
@@ -271,9 +279,13 @@ async function obtenerEventos() {
     throw new Error(error.error || "Error al obtener eventos");
 }
 
-async function obtenerSectores() {
+async function obtenerSectores(idAdmin = null) {
 
-    const response = await fetch("/api/sectores");
+    const url = idAdmin
+        ? `/api/sectores?idAdmin=${idAdmin}`
+        : "/api/sectores";
+
+    const response = await fetch(url);
 
     if (response.ok) {
         return await response.json();
@@ -395,9 +407,13 @@ async function obtenerFuncionarios() {
     throw new Error(error.error || "Error al obtener funcionarios");
 }
 
-async function obtenerEventoSectoresHabilitados() {
+async function obtenerEventoSectoresHabilitados(idAdmin = null) {
 
-    const response = await fetch("/api/eventos/sectores-habilitados");
+    const url = idAdmin
+        ? `/api/eventos/sectores-habilitados?idAdmin=${idAdmin}`
+        : "/api/eventos/sectores-habilitados";
+
+    const response = await fetch(url);
 
     if (response.ok) {
         return await response.json();
